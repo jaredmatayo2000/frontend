@@ -2,65 +2,68 @@ import { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 import API from "./API";
 
-const AddDrug = ({ onAdd }) => {
-  const [name, setName] = useState("");
+const AddLand = ({ onAdd }) => {
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [drugId, setDrugId] = useState(null);
-  const [drugs, setDrugs] = useState([]);
+  const [landId, setLandId] = useState(null);
+  const [landLocation, setLandLocation] = useState(null);
+  const [status, setStatus] = useState([]);
 
   useEffect(() => {
-    refreshDrugs();
+    refreshLands();
   }, []);
 
-  const refreshDrugs = () => {
+  const refreshLands = () => {
     API.get("/")
       .then((res) => {
-        setDrugs(res.data);
-        // setName(res[0].name)
-        // setDescription(res[0].description)
-        // setPrice(res[0].prrice)
-        // setDrugId(res[0].id)
+        setLands(res.data);
+        setTitle(res[0].name)
+        setDescription(res[0].description)
+        setPrice(res[0].price)
+        setLandId(res[0].id)
+        setLandLocation(res[0].location)
       })
       .catch(console.error);
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    let item = { name, description, price };
-    API.post("/", item).then(() => refreshDrugs());
+    let item = { title, description, price };
+    API.post("/", item).then(() => refreshLands());
   };
 
   const onUpdate = (id) => {
-    let item = { name };
-    API.patch(`/${id}/`, item).then((res) => refreshDrugs());
+    let item = { title };
+    API.patch(`/${id}/`, item).then((res) => refreshLands());
   };
 
   const onDelete = (id) => {
-    API.delete(`/${id}/`).then((res) => refreshDrugs());
+    API.delete(`/${id}/`).then((res) => refreshLands());
   };
 
-  function selectDrug(id) {
-    let item = drugs.filter((drug) => drug.id === id)[0];
-    setName(item.name);
+  function selectLand(id) {
+    let item = lands.filter((land) => land.id === id)[0];
+    setTitle(item.title);
     setDescription(item.description);
     setPrice(item.price);
-    setDrugId(item.id);
+    setLandId(item.id);
+    setLandLocation(item.location);
   }
 
   return (
     <div className="container mt-5">
       <div className="row">
         <div className="col-md-4">
-          <h3 className="float-left">Create a new Drug</h3>
+          <h3 className="float-left">Create a new land</h3>
           <Form onSubmit={onSubmit} className="mt-4">
             <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>{drugId}Name</Form.Label>
+              <Form.Label>{landId}Title</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter Land title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </Form.Group>
 
@@ -83,6 +86,15 @@ const AddDrug = ({ onAdd }) => {
                 onChange={(e) => setPrice(e.target.value)}
               />
             </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicStarring">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Land Location"
+                value={location}
+                onChange={(e) => setLandLocation(e.target.value)}
+              />
+            </Form.Group>
 
             <div className="float-right">
               <Button
@@ -96,7 +108,7 @@ const AddDrug = ({ onAdd }) => {
               <Button
                 variant="primary"
                 type="button"
-                onClick={() => onUpdate(drugId)}
+                onClick={() => onUpdate(landId)}
                 className="mx-2"
               >
                 Update
@@ -109,30 +121,32 @@ const AddDrug = ({ onAdd }) => {
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Drug Name</th>
+                <th scope="col">Title</th>
                 <th scope="col">Description</th>
                 <th scope="col">Price</th>
+                  <th scope="col">Location</th>
                 <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              {drugs.map((drug, index) => {
+              {lands.map((land, index) => {
                 return (
                   <tr key="">
-                    <th scope="row">{drug.id}</th>
-                    <td> {drug.name}</td>
-                    <td>{drug.description}</td>
-                    <td>{drug.price}</td>
+                    <th scope="row">{land.id}</th>
+                    <td> {land.title}</td>
+                    <td>{land.description}</td>
+                    <td>{land.price}</td>
+                    <td>{land.location}</td>
                     <td>
                       <i
                         className="fa fa-pencil-square text-primary d-inline"
                         aria-hidden="true"
-                        onClick={() => selectDrug(drug.id)}
+                        onClick={() => selectLand(land.id)}
                       ></i>
                       <i
                         className="fa fa-trash-o text-danger d-inline mx-3"
                         aria-hidden="true"
-                        onClick={() => onDelete(drug.id)}
+                        onClick={() => onDelete(land.id)}
                       ></i>
                     </td>
                   </tr>
@@ -146,4 +160,4 @@ const AddDrug = ({ onAdd }) => {
   );
 };
 
-export default AddDrug;
+export default AddLand;
